@@ -1,1 +1,5 @@
 Team_Canvas/
+node_modules/
+.cache/
+dist/
+Car_Parts/
