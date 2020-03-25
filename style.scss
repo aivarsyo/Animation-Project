@@ -1,4 +1,35 @@
+@font-face {
+    font-family: 'bahn';
+    src: url('Font/BAHNSCHRIFT.ttf')  format('truetype');
+  }
+
 body{
     background: #fff7e3;
+    margin: 0;
 }
 
+#assemblyLine{
+    width: 0;
+    height: 0;
+}
+
+#infoMain{
+    width: 0;
+    height: 0;
+}
+
+#CarParts > g{
+    transform-origin: 0 0;
+}
+
+#FordLogo{
+    cursor: pointer;
+}
+
+#redButton{
+    cursor: pointer;
+}
+
+#AssemblyLine > g:not(#conveyer){
+    transform-origin: 45.955px 46.205px;
+}
