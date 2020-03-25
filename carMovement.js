@@ -1,7 +1,10 @@
+import { showAlert } from "./ending.js";
+
 window.addEventListener("DOMContentLoaded", start);
 
 let root = document.documentElement;
 let currentPos = 0;
+const endPos = -1000;
 let moveDelay = 10;
 let moveAmount = 0;
 const acceleration = 0.5;
@@ -35,19 +38,27 @@ async function loadSVG(url, parent) {
 }
 
 function moveCar(direction) {
-  if (!mousePressed && Math.round(moveAmount) == 0) return;
+  let globalID;
+  function repeatOften() {
+    if (!mousePressed && Math.round(moveAmount) == 0) return;
 
-  if (direction == "right") {
-    currentPos -= getMoveSpeed();
+    if (direction == "right") {
+      currentPos -= getMoveSpeed();
+    }
+    if (direction == "left") {
+      currentPos += getMoveSpeed();
+    }
+    root.style.setProperty("--bgPos", currentPos + "px");
+    checkForEnding();
+    globalID = requestAnimationFrame(repeatOften);
   }
-  if (direction == "left") {
-    currentPos += getMoveSpeed();
+  globalID = requestAnimationFrame(repeatOften);
+}
+
+function checkForEnding() {
+  if (currentPos <= endPos) {
+    showAlert();
   }
-  root.style.setProperty("--bgPos", currentPos + "px");
-  console.log(currentPos);
-  setTimeout(function() {
-    moveCar(direction);
-  }, moveDelay);
 }
 
 function getMoveSpeed() {
@@ -59,10 +70,10 @@ function getMoveSpeed() {
     }
   } else {
     if (moveAmount > 0) {
-      moveAmount -= friction;
+      Math.round((moveAmount -= friction));
     }
     if (moveAmount < 0) {
-      moveAmount += friction;
+      Math.round((moveAmount += friction));
     }
   }
   return moveAmount;
