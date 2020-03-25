@@ -1,0 +1,34 @@
+{
+  "name": "Animation_Project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build *.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aivarsyo/Animation-Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aivarsyo/Animation-Project/issues"
+  },
+  "homepage": "https://github.com/aivarsyo/Animation-Project#readme",
+  "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.26.3"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.8.7",
+    "@babel/runtime": "^7.8.7",
+    "gsap": "^3.2.4",
+    "parcel-plugin-static-files-copy": "^2.3.1",
+    "svg.js": "^2.7.1"
+  }
+}
