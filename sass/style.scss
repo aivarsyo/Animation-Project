@@ -1,0 +1,42 @@
+* {
+  margin: 0;
+}
+
+:root {
+  --bgPos: 0px;
+}
+
+#background {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+#background svg {
+  height: 100%;
+  position: relative;
+  transform: translate(var(--bgPos));
+}
+
+#car {
+  position: absolute;
+  width: 10vw;
+  top: 60vh;
+  left: 10vw;
+  height: auto;
+  z-index: 1;
+}
+
+.moveButton {
+  width: 10vw;
+  position: absolute;
+  z-index: 2;
+}
+
+#button1 {
+  left: 5vw;
+}
+
+#button2 {
+  left: 20vw;
+}
