@@ -76,7 +76,7 @@ async function importAssemblyLine() {
 
 async function fordLogoClicked() {
 
-    let response = await fetch("assemblyLine.svg");
+    let response = await fetch("assemblyLine2.svg");
 
     let mySvgData = await response.text();
 
@@ -115,7 +115,7 @@ function continueFordClicked() {
 
 async function importsMainInfo() {
 
-    let response = await fetch("infoMain.svg");
+    let response = await fetch("infoMain3.svg");
 
     let mySvgData = await response.text();
 
@@ -154,7 +154,134 @@ function redButtonClicked() {
 
     const carParts = document.querySelectorAll("#CarParts > g:not(#FordLogo)")
 
-    gsap.to()
+    gsap.to(carParts, 1, {
+        x: 1000,
+        ease: Linear.easeNone,
+        onComplete: function () {
+            introScreenDisappears();
+        }
+    })
+
+    function introScreenDisappears() {
+        gsap.killTweensOf(engines);
+
+        const allSvgs = document.querySelectorAll("#CarParts");
+
+        gsap.to(allSvgs, 2, {
+            opacity: 0,
+            onComplete: function () {
+                importsSecondScene();
+            }
+        })
+    }
+
 }
 
+/* ------------------------------------------- */
 
+let root = document.documentElement;
+let currentPos = 0;
+let moveDelay = 10;
+let moveAmount = 0;
+const acceleration = 0.5;
+const friction = 1;
+const topSpeed = 10;
+let mousePressed = false;
+
+async function importsSecondScene() {
+
+    document.querySelector("#firstScene").innerHTML = "";
+
+    let response = await fetch("background.svg");
+    let mySvgData = await response.text();
+    document.querySelector("#background").innerHTML = mySvgData;
+
+    let response2 = await fetch("fordCar.svg");
+    let mySvgData2 = await response2.text();
+    document.querySelector("#car").innerHTML = mySvgData2;
+
+    let response3 = await fetch("pedals.svg");
+    let mySvgData3 = await response3.text();
+    document.querySelector("#pedalsSection").innerHTML = mySvgData3;
+
+    showSecondSceneSvgs();
+}
+
+function showSecondSceneSvgs() {
+
+    const car = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    car.setAttribute("href", "#FordCar");
+    document.querySelector("#backgroundSecondScene").appendChild(car);
+
+    const pedals = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    pedals.setAttribute("href", "#pedals");
+    document.querySelector("#backgroundSecondScene").appendChild(pedals);
+
+    pedalsClicked();
+}
+
+function pedalsClicked() {
+
+    document.querySelector("#pedalsGroup > image:nth-child(1)").addEventListener("mousedown", () => {
+        mousePressed = true;
+        moveCar("left");
+    });
+    document.querySelector("#pedalsGroup > image:nth-child(2)").addEventListener("mousedown", () => {
+        mousePressed = true;
+        moveCar("right");
+    });
+    document.addEventListener("mouseup", () => {
+        mousePressed = false;
+    });
+}
+
+function moveCar(direction) {
+
+    if (!mousePressed && Math.round(moveAmount) == 0) return;
+
+    if (direction == "right") {
+        currentPos -= getMoveSpeed();
+    }
+    if (direction == "left") {
+        currentPos += getMoveSpeed();
+    }
+
+    root.style.setProperty("--bgPos", currentPos + "px");
+
+    console.log(currentPos);
+
+    setTimeout(function () {
+        moveCar(direction);
+    }, moveDelay);
+}
+
+function getMoveSpeed() {
+
+    if (mousePressed) {
+        if (moveAmount < topSpeed) {
+            moveAmount += acceleration;
+        } else {
+            moveAmount = topSpeed;
+        }
+    } else {
+        if (moveAmount > 0) {
+            moveAmount -= friction;
+        }
+        if (moveAmount < 0) {
+            moveAmount += friction;
+        }
+    }
+    return moveAmount;
+}
+
+/* async function makeSmoke() {
+    let s = document.createElement("div");
+    s.classList.add("smokeAnim");
+    let response = await fetch(url);
+    let mySVG = await response.text();
+    s.innerHTML = mySVG;
+    s.addEventListener("animationEnd", () => {
+        s.remove();
+    });
+    document.querySelector("#car").appendChild(s);
+} */
