@@ -1,0 +1,62 @@
+@font-face {
+  font-family: "bahn";
+  src: url("/BAHNSCHRIFT.5e0a215d.ttf") format("truetype");
+}
+body {
+  background: #fff7e3;
+  margin: 0;
+}
+
+#assemblyLine {
+  width: 0;
+  height: 0;
+}
+
+#infoMain {
+  width: 0;
+  height: 0;
+}
+
+#CarParts > g {
+  transform-origin: 0 0;
+}
+
+#FordLogo {
+  cursor: pointer;
+}
+
+#redButton {
+  cursor: pointer;
+}
+
+#AssemblyLine > g:not(#conveyer) {
+  transform-origin: 45.955px 46.205px;
+}
+
+/* ---------------------------------------- */
+:root {
+  --bgPos: 0px;
+}
+
+#background {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+#background svg {
+  height: 100%;
+  position: relative;
+  transform: translate(var(--bgPos));
+}
+
+#pedalsSection, #car {
+  width: 0;
+  height: 0;
+}
+
+#FordCar {
+  transform: scale(0.5, 0.5);
+}
+
+/*# sourceMappingURL=/style.97fcb138.css.map */
