@@ -39,6 +39,10 @@ body{
 :root {
     --bgPos: 0px;
   }
+
+  .hidden{
+      display: none;
+  }
   
   #background {
     height: 100vh;
@@ -52,11 +56,23 @@ body{
     transform: translate(var(--bgPos));
   }
 
-  #pedalsSection, #car{
-      width: 0;
-      height: 0;
+  #car, #pedalsSection{
+      position: absolute;
+      width: 40%;
+      height: auto;
   }
 
-  #FordCar{
-    transform: scale(0.5, 0.5);
+  #car{
+      top: 50vh;
+      left: 5vw;
+  }
+
+  #pedalsSection{
+      left: 58vw;
+      bottom: 5vh;
+      width: 20%;
+  }
+
+  #pedalsGroup > image{
+      cursor: pointer;
   }
