@@ -67,8 +67,6 @@ async function importAssemblyLine() {
 
     const FordLogo = document.querySelector("#FordLogo");
 
-    FordLogo.classList.add("pulsate");
-
     FordLogo.addEventListener("click", function () {
         fordLogoClicked();
     });
@@ -144,25 +142,32 @@ function clickRedButton() {
 
 function redButtonClicked() {
 
+    const engineSound = document.querySelector("#engineSound");
+
+    engineSound.play();
+
     const engines = document.querySelectorAll("#AssemblyLine > g:not(#conveyer)");
 
     gsap.to(engines, 3, {
         rotation: 360,
         repeat: -1,
         ease: Linear.easeNone,
+        transformOrigin: "center"
     })
 
     const carParts = document.querySelectorAll("#CarParts > g:not(#FordLogo)")
 
-    gsap.to(carParts, 1, {
+    gsap.to(carParts, 3, {
         x: 1000,
         ease: Linear.easeNone,
         onComplete: function () {
             introScreenDisappears();
+            engineSound.pause();
         }
     })
 
     function introScreenDisappears() {
+
         gsap.killTweensOf(engines);
 
         const allSvgs = document.querySelectorAll("#CarParts");
@@ -233,6 +238,9 @@ function moveClouds() {
 async function importsSecondScene() {
 
     document.querySelector("#firstScene").innerHTML = "";
+
+    document.querySelector("body").classList.add("body-bck");
+
     document.querySelectorAll("#background, #car, #pedalsSection").forEach(element => {
         element.classList.remove("hidden");
     })
@@ -241,7 +249,7 @@ async function importsSecondScene() {
     let mySvgData = await response.text();
     document.querySelector("#background").innerHTML = mySvgData;
 
-    let response2 = await fetch("fordCar3.svg");
+    let response2 = await fetch("fordCar6.svg");
     let mySvgData2 = await response2.text();
     document.querySelector("#car").innerHTML = mySvgData2;
 
@@ -255,16 +263,43 @@ async function importsSecondScene() {
 
 function pedalsClicked() {
 
+    const wheels = document.querySelectorAll("#firstWheel, #secondWheel");
+
     document.querySelector("#pedalsGroup > image:nth-child(1)").addEventListener("mousedown", () => {
         mousePressed = true;
         moveCar("left");
+
+        const carDrives = document.querySelector("#carDrives");
+        carDrives.play();
+
+        gsap.to(wheels, 3, {
+            rotation: -360,
+            repeat: -1,
+            ease: Linear.easeNone,
+            transformOrigin: "center"
+        })
     });
     document.querySelector("#pedalsGroup > image:nth-child(2)").addEventListener("mousedown", () => {
         mousePressed = true;
         moveCar("right");
+
+        const carDrives = document.querySelector("#carDrives");
+        carDrives.play();
+
+        gsap.to(wheels, 3, {
+            rotation: 360,
+            repeat: -1,
+            ease: Linear.easeNone,
+            transformOrigin: "center"
+        })
     });
     document.addEventListener("mouseup", () => {
         mousePressed = false;
+
+        const carDrives = document.querySelector("#carDrives");
+        carDrives.pause();
+
+        gsap.killTweensOf(wheels);
     });
 }
 
@@ -280,12 +315,13 @@ function moveCar(direction) {
     }
 
     root.style.setProperty("--bgPos", currentPos + "px");
+    document.querySelector("body").style.backgroundPositionX = "var(--bgPos)";
 
     if (currentPos > 0) {
         currentPos = 0;
-    } else if (currentPos < -625) {
+    } /* else if (currentPos < -625) {
         currentPos = -625;
-    }
+    } */
 
     setTimeout(function () {
         moveCar(direction);
