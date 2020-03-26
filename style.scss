@@ -8,6 +8,18 @@ body{
     margin: 0;
 }
 
+.body-bck{
+    background: url(background2.svg);
+    background-size: cover;
+    background-repeat: repeat-x;
+    background-position: -60%;
+}
+
+#carParts, #CarParts {
+    height: 100vh;
+    width: 100vw;
+}
+
 #assemblyLine{
     width: 0;
     height: 0;
@@ -28,10 +40,6 @@ body{
 
 #redButton{
     cursor: pointer;
-}
-
-#AssemblyLine > g:not(#conveyer){
-    transform-origin: 45.955px 46.205px;
 }
 
 /* ---------------------------------------- */

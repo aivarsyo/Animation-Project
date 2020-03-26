@@ -12528,12 +12528,11 @@ function _importAssemblyLine() {
         switch (_context2.prev = _context2.next) {
           case 0:
             FordLogo = document.querySelector("#FordLogo");
-            FordLogo.classList.add("pulsate");
             FordLogo.addEventListener("click", function () {
               fordLogoClicked();
             });
 
-          case 3:
+          case 2:
           case "end":
             return _context2.stop();
         }
@@ -12645,21 +12644,25 @@ function clickRedButton() {
 }
 
 function redButtonClicked() {
+  var engineSound = document.querySelector("#engineSound");
+  engineSound.play();
   var engines = document.querySelectorAll("#AssemblyLine > g:not(#conveyer)");
 
   _gsap.gsap.to(engines, 3, {
     rotation: 360,
     repeat: -1,
-    ease: _gsap.Linear.easeNone
+    ease: _gsap.Linear.easeNone,
+    transformOrigin: "center"
   });
 
   var carParts = document.querySelectorAll("#CarParts > g:not(#FordLogo)");
 
-  _gsap.gsap.to(carParts, 1, {
+  _gsap.gsap.to(carParts, 3, {
     x: 1000,
     ease: _gsap.Linear.easeNone,
     onComplete: function onComplete() {
       introScreenDisappears();
+      engineSound.pause();
     }
   });
 
@@ -12743,46 +12746,47 @@ function _importsSecondScene() {
         switch (_context5.prev = _context5.next) {
           case 0:
             document.querySelector("#firstScene").innerHTML = "";
+            document.querySelector("body").classList.add("body-bck");
             document.querySelectorAll("#background, #car, #pedalsSection").forEach(function (element) {
               element.classList.remove("hidden");
             });
-            _context5.next = 4;
+            _context5.next = 5;
             return fetch("background2.svg");
 
-          case 4:
+          case 5:
             response = _context5.sent;
-            _context5.next = 7;
+            _context5.next = 8;
             return response.text();
 
-          case 7:
+          case 8:
             mySvgData = _context5.sent;
             document.querySelector("#background").innerHTML = mySvgData;
-            _context5.next = 11;
-            return fetch("fordCar3.svg");
+            _context5.next = 12;
+            return fetch("fordCar6.svg");
 
-          case 11:
+          case 12:
             response2 = _context5.sent;
-            _context5.next = 14;
+            _context5.next = 15;
             return response2.text();
 
-          case 14:
+          case 15:
             mySvgData2 = _context5.sent;
             document.querySelector("#car").innerHTML = mySvgData2;
-            _context5.next = 18;
+            _context5.next = 19;
             return fetch("pedals2.svg");
 
-          case 18:
+          case 19:
             response3 = _context5.sent;
-            _context5.next = 21;
+            _context5.next = 22;
             return response3.text();
 
-          case 21:
+          case 22:
             mySvgData3 = _context5.sent;
             document.querySelector("#pedalsSection").innerHTML = mySvgData3;
             pedalsClicked();
             moveClouds();
 
-          case 25:
+          case 26:
           case "end":
             return _context5.stop();
         }
@@ -12793,16 +12797,39 @@ function _importsSecondScene() {
 }
 
 function pedalsClicked() {
+  var wheels = document.querySelectorAll("#firstWheel, #secondWheel");
   document.querySelector("#pedalsGroup > image:nth-child(1)").addEventListener("mousedown", function () {
     mousePressed = true;
     moveCar("left");
+    var carDrives = document.querySelector("#carDrives");
+    carDrives.play();
+
+    _gsap.gsap.to(wheels, 3, {
+      rotation: -360,
+      repeat: -1,
+      ease: _gsap.Linear.easeNone,
+      transformOrigin: "center"
+    });
   });
   document.querySelector("#pedalsGroup > image:nth-child(2)").addEventListener("mousedown", function () {
     mousePressed = true;
     moveCar("right");
+    var carDrives = document.querySelector("#carDrives");
+    carDrives.play();
+
+    _gsap.gsap.to(wheels, 3, {
+      rotation: 360,
+      repeat: -1,
+      ease: _gsap.Linear.easeNone,
+      transformOrigin: "center"
+    });
   });
   document.addEventListener("mouseup", function () {
     mousePressed = false;
+    var carDrives = document.querySelector("#carDrives");
+    carDrives.pause();
+
+    _gsap.gsap.killTweensOf(wheels);
   });
 }
 
@@ -12818,12 +12845,15 @@ function moveCar(direction) {
   }
 
   root.style.setProperty("--bgPos", currentPos + "px");
+  document.querySelector("body").style.backgroundPositionX = "var(--bgPos)";
 
   if (currentPos > 0) {
     currentPos = 0;
-  } else if (currentPos < -625) {
-    currentPos = -625;
   }
+  /* else if (currentPos < -625) {
+    currentPos = -625;
+  } */
+
 
   setTimeout(function () {
     moveCar(direction);
@@ -12877,7 +12907,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50080" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50126" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
