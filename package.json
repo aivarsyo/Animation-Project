@@ -1,0 +1,25 @@
+{
+  "name": "Animation-Project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "dependencies": {
+    "gsap": "^3.2.4",
+    "parcel-bundler": "^1.12.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "parcel index.html --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aivarsyo/Animation-Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aivarsyo/Animation-Project/issues"
+  },
+  "homepage": "https://github.com/aivarsyo/Animation-Project#readme"
+}
