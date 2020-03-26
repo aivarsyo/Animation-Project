@@ -38,6 +38,7 @@ async function loadSVG(url, parent) {
 }
 
 function moveCar(direction) {
+  makeSmoke();
   let globalID;
   function repeatOften() {
     if (!mousePressed && Math.round(moveAmount) == 0) return;
@@ -79,14 +80,16 @@ function getMoveSpeed() {
   return moveAmount;
 }
 
-async function makeSmoke() {
+function makeSmoke() {
+  if (!mousePressed) return;
   let s = document.createElement("div");
+  loadSVG("/smoke.svg", s);
   s.classList.add("smokeAnim");
-  let response = await fetch(url);
-  let mySVG = await response.text();
-  s.innerHTML = mySVG;
-  s.addEventListener("animationEnd", () => {
+  s.addEventListener("animationend", () => {
     s.remove();
   });
   document.querySelector("#car").appendChild(s);
+  setTimeout(() => {
+    makeSmoke();
+  }, 100);
 }
