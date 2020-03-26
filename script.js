@@ -188,36 +188,69 @@ const friction = 1;
 const topSpeed = 10;
 let mousePressed = false;
 
+function moveClouds() {
+
+    var _container = document.querySelector("#backgroundSecondScene");
+    var _parts = document.querySelectorAll('#clouds > *');
+    var _maxY = _container.getBBox().height;
+    var _maxX = _container.getBBox().width;
+
+    function _NextMovement(part) {
+        var r = 50,
+            minY = r,
+            minX = r,
+            maxY = _maxY - r,
+            maxX = _maxX - r,
+            randY = random(minY, maxY),
+            randX = random(minX, maxX);
+
+        part.gsap = gsap.to(part, random(5, 10), {
+            y: randY / 10,
+            ease: Power1.easeInOut,
+            onComplete: function () {
+                _NextMovement(part);
+            }
+        });
+    }
+
+
+    function random(min, max) {
+        if (max == null) {
+            max = min;
+            min = 0;
+        }
+        return Math.random() * (max - min) + Number(min);
+    }
+
+    // initialize
+    for (let i = 0; i < _parts.length; i++) {
+        _NextMovement(_parts[i]);
+    }
+};
+
+
+
 async function importsSecondScene() {
 
     document.querySelector("#firstScene").innerHTML = "";
+    document.querySelectorAll("#background, #car, #pedalsSection").forEach(element => {
+        element.classList.remove("hidden");
+    })
 
-    let response = await fetch("background.svg");
+    let response = await fetch("background2.svg");
     let mySvgData = await response.text();
     document.querySelector("#background").innerHTML = mySvgData;
 
-    let response2 = await fetch("fordCar.svg");
+    let response2 = await fetch("fordCar3.svg");
     let mySvgData2 = await response2.text();
     document.querySelector("#car").innerHTML = mySvgData2;
 
-    let response3 = await fetch("pedals.svg");
+    let response3 = await fetch("pedals2.svg");
     let mySvgData3 = await response3.text();
     document.querySelector("#pedalsSection").innerHTML = mySvgData3;
 
-    showSecondSceneSvgs();
-}
-
-function showSecondSceneSvgs() {
-
-    const car = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-    car.setAttribute("href", "#FordCar");
-    document.querySelector("#backgroundSecondScene").appendChild(car);
-
-    const pedals = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-    pedals.setAttribute("href", "#pedals");
-    document.querySelector("#backgroundSecondScene").appendChild(pedals);
-
     pedalsClicked();
+    moveClouds();
 }
 
 function pedalsClicked() {
@@ -248,7 +281,11 @@ function moveCar(direction) {
 
     root.style.setProperty("--bgPos", currentPos + "px");
 
-    console.log(currentPos);
+    if (currentPos > 0) {
+        currentPos = 0;
+    } else if (currentPos < -625) {
+        currentPos = -625;
+    }
 
     setTimeout(function () {
         moveCar(direction);
@@ -273,15 +310,3 @@ function getMoveSpeed() {
     }
     return moveAmount;
 }
-
-/* async function makeSmoke() {
-    let s = document.createElement("div");
-    s.classList.add("smokeAnim");
-    let response = await fetch(url);
-    let mySVG = await response.text();
-    s.innerHTML = mySVG;
-    s.addEventListener("animationEnd", () => {
-        s.remove();
-    });
-    document.querySelector("#car").appendChild(s);
-} */
