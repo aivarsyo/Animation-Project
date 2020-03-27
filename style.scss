@@ -84,3 +84,112 @@ body{
   #pedalsGroup > image{
       cursor: pointer;
   }
+
+/* ------------------------------------ */
+
+// Ending
+
+#fuelAlert {
+    width: 30vw;
+    position: absolute;
+    bottom: 20vh;
+    left: 60vw;
+    cursor: pointer;
+  }
+  
+  #adviceBox {
+    position: absolute;
+    z-index: 100;
+    left: 25vw;
+    background-color: aquamarine;
+    width: 50vw;
+    height: 50vh;
+    text-align: center;
+    border: 1px solid black;
+    animation: introPopupKeys 1 0.4s ease;
+  }
+  
+  .fuelAnim {
+    animation: fuelAnimKeys 1s ease-out infinite;
+  }
+  
+  .smokeAnim {
+    position: absolute;
+    animation: smokeAnimKeys 1 0.5s ease;
+    width: 15%;
+    bottom: 10vh;
+    right: 23vw;
+  }
+  
+  @keyframes fuelAnimKeys {
+    0% {
+      transform: scale(1);
+    }
+    90% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes introPopupKeys {
+    0% {
+      transform: scale(0);
+    }
+    90% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes smokeAnimKeys {
+    0% {
+      transform: scale(1);
+      transform: translate(-100px, 0px);
+    }
+    50% {
+      transform: scale(2);
+      transform: translate(-150px, 0px);
+    }
+    100% {
+      transform: scale(0.5);
+      transform: translate(-200px, 0px);
+    }
+  }
+
+/*   ----------------------- */
+
+#modalEngine{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.9); 
+    z-index: 200;
+}
+
+
+#modalEngine>svg{
+    text-align: center;
+    /* transform: scale(0.6); */
+}
+.close {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+  z-index: 201;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
