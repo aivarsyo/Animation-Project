@@ -4,6 +4,7 @@ import { Power1 } from "gsap";
 import { Power2 } from "gsap";
 import { Linear } from "gsap";
 import { Bounce } from "gsap";
+import { showAlert } from "./ending.js";
 
 let myAnimation;
 
@@ -186,6 +187,7 @@ function redButtonClicked() {
 
 let root = document.documentElement;
 let currentPos = 0;
+const endPos = -1000;
 let moveDelay = 10;
 let moveAmount = 0;
 const acceleration = 0.5;
@@ -259,6 +261,7 @@ async function importsSecondScene() {
 
     pedalsClicked();
     moveClouds();
+    flagsClicked();
 }
 
 function pedalsClicked() {
@@ -278,7 +281,10 @@ function pedalsClicked() {
             ease: Linear.easeNone,
             transformOrigin: "center"
         })
+
+        event.preventDefault();
     });
+
     document.querySelector("#pedalsGroup > image:nth-child(2)").addEventListener("mousedown", () => {
         mousePressed = true;
         moveCar("right");
@@ -292,7 +298,10 @@ function pedalsClicked() {
             ease: Linear.easeNone,
             transformOrigin: "center"
         })
+
+        event.preventDefault();
     });
+
     document.addEventListener("mouseup", () => {
         mousePressed = false;
 
@@ -300,32 +309,47 @@ function pedalsClicked() {
         carDrives.pause();
 
         gsap.killTweensOf(wheels);
+
+        event.preventDefault();
     });
+
 }
 
 function moveCar(direction) {
 
-    if (!mousePressed && Math.round(moveAmount) == 0) return;
+    makeSmoke();
+    let globalID;
+    function repeatOften() {
 
-    if (direction == "right") {
-        currentPos -= getMoveSpeed();
+        if (!mousePressed && Math.round(moveAmount) == 0) return;
+
+        if (direction == "right") {
+            currentPos -= getMoveSpeed();
+        }
+        if (direction == "left") {
+            currentPos += getMoveSpeed();
+        }
+
+        if (currentPos > 0) {
+            currentPos = 0;
+        } else if (currentPos < -1010) {
+            currentPos = -1010;
+        }
+
+        root.style.setProperty("--bgPos", currentPos + "px");
+        document.querySelector("body").style.backgroundPositionX = "var(--bgPos)";
+
+        checkForEnding();
+
+        globalID = requestAnimationFrame(repeatOften);
     }
-    if (direction == "left") {
-        currentPos += getMoveSpeed();
+    globalID = requestAnimationFrame(repeatOften);
+}
+
+function checkForEnding() {
+    if (currentPos <= endPos) {
+        showAlert();
     }
-
-    root.style.setProperty("--bgPos", currentPos + "px");
-    document.querySelector("body").style.backgroundPositionX = "var(--bgPos)";
-
-    if (currentPos > 0) {
-        currentPos = 0;
-    } /* else if (currentPos < -625) {
-        currentPos = -625;
-    } */
-
-    setTimeout(function () {
-        moveCar(direction);
-    }, moveDelay);
 }
 
 function getMoveSpeed() {
@@ -346,3 +370,68 @@ function getMoveSpeed() {
     }
     return moveAmount;
 }
+
+function makeSmoke() {
+    if (!mousePressed) return;
+    let s = document.createElement("div");
+    loadSVG("/smoke.svg", s);
+    s.classList.add("smokeAnim");
+    s.addEventListener("animationend", () => {
+        s.remove();
+    });
+    document.querySelector("#car").appendChild(s);
+    setTimeout(() => {
+        makeSmoke();
+    }, 100);
+}
+
+async function loadSVG(url, parent) {
+    let response = await fetch(url);
+    let mySVG = await response.text();
+    parent.innerHTML = mySVG;
+}
+
+/* --------------------------------- */
+
+function flagsClicked() {
+
+    document.querySelectorAll("#checkpoints > image").forEach(element => {
+        element.addEventListener("click", oneFlagClicked)
+    })
+}
+
+async function oneFlagClicked() {
+    let response = await fetch("engine2.svg");
+    let mySvgData = await response.text();
+    document.querySelector("#modalEngine").innerHTML = mySvgData;
+
+    const bigEngine = document.querySelector("#modalEngine > svg");
+    const containerOfEngine = document.querySelector("#modalEngine");
+
+    containerOfEngine.classList.remove("hidden");
+
+    gsap.set(bigEngine, {
+        transformOrigin: "center",
+        scale: 0,
+        y: -200
+    })
+
+    gsap.to(bigEngine, {
+        scale: 0.8
+    })
+
+    const span = document.createElement("span");
+    span.classList.add("close");
+    document.querySelector("#modalEngine").appendChild(span);
+
+    span.innerHTML = "&times;";
+
+    span.addEventListener("click", function () {
+        containerOfEngine.classList.add("hidden");
+    })
+
+
+
+
+}
+

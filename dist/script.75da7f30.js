@@ -12167,7 +12167,82 @@ TweenMaxWithCSS = gsapWithCSS.core.Tween;
 
 exports.TweenMax = TweenMaxWithCSS;
 exports.default = exports.gsap = gsapWithCSS;
-},{"./gsap-core.js":"node_modules/gsap/gsap-core.js","./CSSPlugin.js":"node_modules/gsap/CSSPlugin.js"}],"script.js":[function(require,module,exports) {
+},{"./gsap-core.js":"node_modules/gsap/gsap-core.js","./CSSPlugin.js":"node_modules/gsap/CSSPlugin.js"}],"ending.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.showAlert = showAlert;
+
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+window.addEventListener("DOMContentLoaded", start);
+var fuel = document.querySelector("#fuelAlert");
+var adviceBox = document.querySelector("#adviceBox");
+
+function start() {
+  return _start.apply(this, arguments);
+}
+
+function _start() {
+  _start = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+    var response, mySvg;
+    return _regenerator.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return fetch("/fuelalert.svg");
+
+          case 2:
+            response = _context.sent;
+            _context.next = 5;
+            return response.text();
+
+          case 5:
+            mySvg = _context.sent;
+            fuel.innerHTML = mySvg;
+
+          case 7:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _start.apply(this, arguments);
+}
+
+function showAlert() {
+  // start animation
+  fuel.classList.remove("hidden");
+  fuel.classList.add("fuelAnim");
+  fuel.addEventListener("click", redirectToBeginning);
+}
+
+function redirectToBeginning() {
+  window.location.href = "index.html";
+}
+
+function showAdvicePopup() {
+  hideElement(fuel);
+  document.querySelector("#adviceBox").classList.remove("hidden");
+  document.querySelector("#adviceBox").addEventListener("click", hideAdvicePopup);
+}
+
+function hideAdvicePopup() {
+  adviceBox.addEventListener("animationend", hideElement(adviceBox));
+}
+
+function hideElement(e) {
+  e.classList.add("hidden");
+}
+},{"@babel/runtime/regenerator":"node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"node_modules/@babel/runtime/helpers/asyncToGenerator.js"}],"script.js":[function(require,module,exports) {
 "use strict";
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
@@ -12432,6 +12507,8 @@ require("regenerator-runtime/runtime");
 
 var _gsap = require("gsap");
 
+var _ending = require("./ending.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var myAnimation;
@@ -12684,6 +12761,7 @@ function redButtonClicked() {
 
 var root = document.documentElement;
 var currentPos = 0;
+var endPos = -1000;
 var moveDelay = 10;
 var moveAmount = 0;
 var acceleration = 0.5;
@@ -12785,8 +12863,9 @@ function _importsSecondScene() {
             document.querySelector("#pedalsSection").innerHTML = mySvgData3;
             pedalsClicked();
             moveClouds();
+            flagsClicked();
 
-          case 26:
+          case 27:
           case "end":
             return _context5.stop();
         }
@@ -12810,6 +12889,8 @@ function pedalsClicked() {
       ease: _gsap.Linear.easeNone,
       transformOrigin: "center"
     });
+
+    event.preventDefault();
   });
   document.querySelector("#pedalsGroup > image:nth-child(2)").addEventListener("mousedown", function () {
     mousePressed = true;
@@ -12823,6 +12904,8 @@ function pedalsClicked() {
       ease: _gsap.Linear.easeNone,
       transformOrigin: "center"
     });
+
+    event.preventDefault();
   });
   document.addEventListener("mouseup", function () {
     mousePressed = false;
@@ -12830,34 +12913,45 @@ function pedalsClicked() {
     carDrives.pause();
 
     _gsap.gsap.killTweensOf(wheels);
+
+    event.preventDefault();
   });
 }
 
 function moveCar(direction) {
-  if (!mousePressed && Math.round(moveAmount) == 0) return;
+  makeSmoke();
+  var globalID;
 
-  if (direction == "right") {
-    currentPos -= getMoveSpeed();
+  function repeatOften() {
+    if (!mousePressed && Math.round(moveAmount) == 0) return;
+
+    if (direction == "right") {
+      currentPos -= getMoveSpeed();
+    }
+
+    if (direction == "left") {
+      currentPos += getMoveSpeed();
+    }
+
+    if (currentPos > 0) {
+      currentPos = 0;
+    } else if (currentPos < -1010) {
+      currentPos = -1010;
+    }
+
+    root.style.setProperty("--bgPos", currentPos + "px");
+    document.querySelector("body").style.backgroundPositionX = "var(--bgPos)";
+    checkForEnding();
+    globalID = requestAnimationFrame(repeatOften);
   }
 
-  if (direction == "left") {
-    currentPos += getMoveSpeed();
+  globalID = requestAnimationFrame(repeatOften);
+}
+
+function checkForEnding() {
+  if (currentPos <= endPos) {
+    (0, _ending.showAlert)();
   }
-
-  root.style.setProperty("--bgPos", currentPos + "px");
-  document.querySelector("body").style.backgroundPositionX = "var(--bgPos)";
-
-  if (currentPos > 0) {
-    currentPos = 0;
-  }
-  /* else if (currentPos < -625) {
-    currentPos = -625;
-  } */
-
-
-  setTimeout(function () {
-    moveCar(direction);
-  }, moveDelay);
 }
 
 function getMoveSpeed() {
@@ -12879,7 +12973,116 @@ function getMoveSpeed() {
 
   return moveAmount;
 }
-},{"@babel/runtime/regenerator":"node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"node_modules/@babel/runtime/helpers/asyncToGenerator.js","core-js/modules/es6.array.copy-within":"node_modules/core-js/modules/es6.array.copy-within.js","core-js/modules/es6.array.fill":"node_modules/core-js/modules/es6.array.fill.js","core-js/modules/es6.array.find":"node_modules/core-js/modules/es6.array.find.js","core-js/modules/es6.array.find-index":"node_modules/core-js/modules/es6.array.find-index.js","core-js/modules/es7.array.flat-map":"node_modules/core-js/modules/es7.array.flat-map.js","core-js/modules/es6.array.from":"node_modules/core-js/modules/es6.array.from.js","core-js/modules/es7.array.includes":"node_modules/core-js/modules/es7.array.includes.js","core-js/modules/es6.array.iterator":"node_modules/core-js/modules/es6.array.iterator.js","core-js/modules/es6.array.of":"node_modules/core-js/modules/es6.array.of.js","core-js/modules/es6.array.sort":"node_modules/core-js/modules/es6.array.sort.js","core-js/modules/es6.array.species":"node_modules/core-js/modules/es6.array.species.js","core-js/modules/es6.date.to-primitive":"node_modules/core-js/modules/es6.date.to-primitive.js","core-js/modules/es6.function.has-instance":"node_modules/core-js/modules/es6.function.has-instance.js","core-js/modules/es6.function.name":"node_modules/core-js/modules/es6.function.name.js","core-js/modules/es6.map":"node_modules/core-js/modules/es6.map.js","core-js/modules/es6.math.acosh":"node_modules/core-js/modules/es6.math.acosh.js","core-js/modules/es6.math.asinh":"node_modules/core-js/modules/es6.math.asinh.js","core-js/modules/es6.math.atanh":"node_modules/core-js/modules/es6.math.atanh.js","core-js/modules/es6.math.cbrt":"node_modules/core-js/modules/es6.math.cbrt.js","core-js/modules/es6.math.clz32":"node_modules/core-js/modules/es6.math.clz32.js","core-js/modules/es6.math.cosh":"node_modules/core-js/modules/es6.math.cosh.js","core-js/modules/es6.math.expm1":"node_modules/core-js/modules/es6.math.expm1.js","core-js/modules/es6.math.fround":"node_modules/core-js/modules/es6.math.fround.js","core-js/modules/es6.math.hypot":"node_modules/core-js/modules/es6.math.hypot.js","core-js/modules/es6.math.imul":"node_modules/core-js/modules/es6.math.imul.js","core-js/modules/es6.math.log1p":"node_modules/core-js/modules/es6.math.log1p.js","core-js/modules/es6.math.log10":"node_modules/core-js/modules/es6.math.log10.js","core-js/modules/es6.math.log2":"node_modules/core-js/modules/es6.math.log2.js","core-js/modules/es6.math.sign":"node_modules/core-js/modules/es6.math.sign.js","core-js/modules/es6.math.sinh":"node_modules/core-js/modules/es6.math.sinh.js","core-js/modules/es6.math.tanh":"node_modules/core-js/modules/es6.math.tanh.js","core-js/modules/es6.math.trunc":"node_modules/core-js/modules/es6.math.trunc.js","core-js/modules/es6.number.constructor":"node_modules/core-js/modules/es6.number.constructor.js","core-js/modules/es6.number.epsilon":"node_modules/core-js/modules/es6.number.epsilon.js","core-js/modules/es6.number.is-finite":"node_modules/core-js/modules/es6.number.is-finite.js","core-js/modules/es6.number.is-integer":"node_modules/core-js/modules/es6.number.is-integer.js","core-js/modules/es6.number.is-nan":"node_modules/core-js/modules/es6.number.is-nan.js","core-js/modules/es6.number.is-safe-integer":"node_modules/core-js/modules/es6.number.is-safe-integer.js","core-js/modules/es6.number.max-safe-integer":"node_modules/core-js/modules/es6.number.max-safe-integer.js","core-js/modules/es6.number.min-safe-integer":"node_modules/core-js/modules/es6.number.min-safe-integer.js","core-js/modules/es6.number.parse-float":"node_modules/core-js/modules/es6.number.parse-float.js","core-js/modules/es6.number.parse-int":"node_modules/core-js/modules/es6.number.parse-int.js","core-js/modules/es6.object.assign":"node_modules/core-js/modules/es6.object.assign.js","core-js/modules/es7.object.define-getter":"node_modules/core-js/modules/es7.object.define-getter.js","core-js/modules/es7.object.define-setter":"node_modules/core-js/modules/es7.object.define-setter.js","core-js/modules/es7.object.entries":"node_modules/core-js/modules/es7.object.entries.js","core-js/modules/es6.object.freeze":"node_modules/core-js/modules/es6.object.freeze.js","core-js/modules/es6.object.get-own-property-descriptor":"node_modules/core-js/modules/es6.object.get-own-property-descriptor.js","core-js/modules/es7.object.get-own-property-descriptors":"node_modules/core-js/modules/es7.object.get-own-property-descriptors.js","core-js/modules/es6.object.get-own-property-names":"node_modules/core-js/modules/es6.object.get-own-property-names.js","core-js/modules/es6.object.get-prototype-of":"node_modules/core-js/modules/es6.object.get-prototype-of.js","core-js/modules/es7.object.lookup-getter":"node_modules/core-js/modules/es7.object.lookup-getter.js","core-js/modules/es7.object.lookup-setter":"node_modules/core-js/modules/es7.object.lookup-setter.js","core-js/modules/es6.object.prevent-extensions":"node_modules/core-js/modules/es6.object.prevent-extensions.js","core-js/modules/es6.object.to-string":"node_modules/core-js/modules/es6.object.to-string.js","core-js/modules/es6.object.is":"node_modules/core-js/modules/es6.object.is.js","core-js/modules/es6.object.is-frozen":"node_modules/core-js/modules/es6.object.is-frozen.js","core-js/modules/es6.object.is-sealed":"node_modules/core-js/modules/es6.object.is-sealed.js","core-js/modules/es6.object.is-extensible":"node_modules/core-js/modules/es6.object.is-extensible.js","core-js/modules/es6.object.keys":"node_modules/core-js/modules/es6.object.keys.js","core-js/modules/es6.object.seal":"node_modules/core-js/modules/es6.object.seal.js","core-js/modules/es7.object.values":"node_modules/core-js/modules/es7.object.values.js","core-js/modules/es6.promise":"node_modules/core-js/modules/es6.promise.js","core-js/modules/es7.promise.finally":"node_modules/core-js/modules/es7.promise.finally.js","core-js/modules/es6.reflect.apply":"node_modules/core-js/modules/es6.reflect.apply.js","core-js/modules/es6.reflect.construct":"node_modules/core-js/modules/es6.reflect.construct.js","core-js/modules/es6.reflect.define-property":"node_modules/core-js/modules/es6.reflect.define-property.js","core-js/modules/es6.reflect.delete-property":"node_modules/core-js/modules/es6.reflect.delete-property.js","core-js/modules/es6.reflect.get":"node_modules/core-js/modules/es6.reflect.get.js","core-js/modules/es6.reflect.get-own-property-descriptor":"node_modules/core-js/modules/es6.reflect.get-own-property-descriptor.js","core-js/modules/es6.reflect.get-prototype-of":"node_modules/core-js/modules/es6.reflect.get-prototype-of.js","core-js/modules/es6.reflect.has":"node_modules/core-js/modules/es6.reflect.has.js","core-js/modules/es6.reflect.is-extensible":"node_modules/core-js/modules/es6.reflect.is-extensible.js","core-js/modules/es6.reflect.own-keys":"node_modules/core-js/modules/es6.reflect.own-keys.js","core-js/modules/es6.reflect.prevent-extensions":"node_modules/core-js/modules/es6.reflect.prevent-extensions.js","core-js/modules/es6.reflect.set":"node_modules/core-js/modules/es6.reflect.set.js","core-js/modules/es6.reflect.set-prototype-of":"node_modules/core-js/modules/es6.reflect.set-prototype-of.js","core-js/modules/es6.regexp.constructor":"node_modules/core-js/modules/es6.regexp.constructor.js","core-js/modules/es6.regexp.flags":"node_modules/core-js/modules/es6.regexp.flags.js","core-js/modules/es6.regexp.match":"node_modules/core-js/modules/es6.regexp.match.js","core-js/modules/es6.regexp.replace":"node_modules/core-js/modules/es6.regexp.replace.js","core-js/modules/es6.regexp.split":"node_modules/core-js/modules/es6.regexp.split.js","core-js/modules/es6.regexp.search":"node_modules/core-js/modules/es6.regexp.search.js","core-js/modules/es6.regexp.to-string":"node_modules/core-js/modules/es6.regexp.to-string.js","core-js/modules/es6.set":"node_modules/core-js/modules/es6.set.js","core-js/modules/es6.symbol":"node_modules/core-js/modules/es6.symbol.js","core-js/modules/es7.symbol.async-iterator":"node_modules/core-js/modules/es7.symbol.async-iterator.js","core-js/modules/es6.string.anchor":"node_modules/core-js/modules/es6.string.anchor.js","core-js/modules/es6.string.big":"node_modules/core-js/modules/es6.string.big.js","core-js/modules/es6.string.blink":"node_modules/core-js/modules/es6.string.blink.js","core-js/modules/es6.string.bold":"node_modules/core-js/modules/es6.string.bold.js","core-js/modules/es6.string.code-point-at":"node_modules/core-js/modules/es6.string.code-point-at.js","core-js/modules/es6.string.ends-with":"node_modules/core-js/modules/es6.string.ends-with.js","core-js/modules/es6.string.fixed":"node_modules/core-js/modules/es6.string.fixed.js","core-js/modules/es6.string.fontcolor":"node_modules/core-js/modules/es6.string.fontcolor.js","core-js/modules/es6.string.fontsize":"node_modules/core-js/modules/es6.string.fontsize.js","core-js/modules/es6.string.from-code-point":"node_modules/core-js/modules/es6.string.from-code-point.js","core-js/modules/es6.string.includes":"node_modules/core-js/modules/es6.string.includes.js","core-js/modules/es6.string.italics":"node_modules/core-js/modules/es6.string.italics.js","core-js/modules/es6.string.iterator":"node_modules/core-js/modules/es6.string.iterator.js","core-js/modules/es6.string.link":"node_modules/core-js/modules/es6.string.link.js","core-js/modules/es7.string.pad-start":"node_modules/core-js/modules/es7.string.pad-start.js","core-js/modules/es7.string.pad-end":"node_modules/core-js/modules/es7.string.pad-end.js","core-js/modules/es6.string.raw":"node_modules/core-js/modules/es6.string.raw.js","core-js/modules/es6.string.repeat":"node_modules/core-js/modules/es6.string.repeat.js","core-js/modules/es6.string.small":"node_modules/core-js/modules/es6.string.small.js","core-js/modules/es6.string.starts-with":"node_modules/core-js/modules/es6.string.starts-with.js","core-js/modules/es6.string.strike":"node_modules/core-js/modules/es6.string.strike.js","core-js/modules/es6.string.sub":"node_modules/core-js/modules/es6.string.sub.js","core-js/modules/es6.string.sup":"node_modules/core-js/modules/es6.string.sup.js","core-js/modules/es7.string.trim-left":"node_modules/core-js/modules/es7.string.trim-left.js","core-js/modules/es7.string.trim-right":"node_modules/core-js/modules/es7.string.trim-right.js","core-js/modules/es6.typed.array-buffer":"node_modules/core-js/modules/es6.typed.array-buffer.js","core-js/modules/es6.typed.int8-array":"node_modules/core-js/modules/es6.typed.int8-array.js","core-js/modules/es6.typed.uint8-array":"node_modules/core-js/modules/es6.typed.uint8-array.js","core-js/modules/es6.typed.uint8-clamped-array":"node_modules/core-js/modules/es6.typed.uint8-clamped-array.js","core-js/modules/es6.typed.int16-array":"node_modules/core-js/modules/es6.typed.int16-array.js","core-js/modules/es6.typed.uint16-array":"node_modules/core-js/modules/es6.typed.uint16-array.js","core-js/modules/es6.typed.int32-array":"node_modules/core-js/modules/es6.typed.int32-array.js","core-js/modules/es6.typed.uint32-array":"node_modules/core-js/modules/es6.typed.uint32-array.js","core-js/modules/es6.typed.float32-array":"node_modules/core-js/modules/es6.typed.float32-array.js","core-js/modules/es6.typed.float64-array":"node_modules/core-js/modules/es6.typed.float64-array.js","core-js/modules/es6.weak-map":"node_modules/core-js/modules/es6.weak-map.js","core-js/modules/es6.weak-set":"node_modules/core-js/modules/es6.weak-set.js","core-js/modules/web.timers":"node_modules/core-js/modules/web.timers.js","core-js/modules/web.immediate":"node_modules/core-js/modules/web.immediate.js","core-js/modules/web.dom.iterable":"node_modules/core-js/modules/web.dom.iterable.js","regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","gsap":"node_modules/gsap/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+function makeSmoke() {
+  if (!mousePressed) return;
+  var s = document.createElement("div");
+  loadSVG("/smoke.svg", s);
+  s.classList.add("smokeAnim");
+  s.addEventListener("animationend", function () {
+    s.remove();
+  });
+  document.querySelector("#car").appendChild(s);
+  setTimeout(function () {
+    makeSmoke();
+  }, 100);
+}
+
+function loadSVG(_x, _x2) {
+  return _loadSVG.apply(this, arguments);
+}
+/* --------------------------------- */
+
+
+function _loadSVG() {
+  _loadSVG = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6(url, parent) {
+    var response, mySVG;
+    return _regenerator.default.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.next = 2;
+            return fetch(url);
+
+          case 2:
+            response = _context6.sent;
+            _context6.next = 5;
+            return response.text();
+
+          case 5:
+            mySVG = _context6.sent;
+            parent.innerHTML = mySVG;
+
+          case 7:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6);
+  }));
+  return _loadSVG.apply(this, arguments);
+}
+
+function flagsClicked() {
+  document.querySelectorAll("#checkpoints > image").forEach(function (element) {
+    element.addEventListener("click", oneFlagClicked);
+  });
+}
+
+function oneFlagClicked() {
+  return _oneFlagClicked.apply(this, arguments);
+}
+
+function _oneFlagClicked() {
+  _oneFlagClicked = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
+    var response, mySvgData, bigEngine, containerOfEngine, span;
+    return _regenerator.default.wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            _context7.next = 2;
+            return fetch("engine2.svg");
+
+          case 2:
+            response = _context7.sent;
+            _context7.next = 5;
+            return response.text();
+
+          case 5:
+            mySvgData = _context7.sent;
+            document.querySelector("#modalEngine").innerHTML = mySvgData;
+            bigEngine = document.querySelector("#modalEngine > svg");
+            containerOfEngine = document.querySelector("#modalEngine");
+            containerOfEngine.classList.remove("hidden");
+
+            _gsap.gsap.set(bigEngine, {
+              transformOrigin: "center",
+              scale: 0,
+              y: -200
+            });
+
+            _gsap.gsap.to(bigEngine, {
+              scale: 0.8
+            });
+
+            span = document.createElement("span");
+            span.classList.add("close");
+            document.querySelector("#modalEngine").appendChild(span);
+            span.innerHTML = "&times;";
+            span.addEventListener("click", function () {
+              containerOfEngine.classList.add("hidden");
+            });
+
+          case 17:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7);
+  }));
+  return _oneFlagClicked.apply(this, arguments);
+}
+},{"@babel/runtime/regenerator":"node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"node_modules/@babel/runtime/helpers/asyncToGenerator.js","core-js/modules/es6.array.copy-within":"node_modules/core-js/modules/es6.array.copy-within.js","core-js/modules/es6.array.fill":"node_modules/core-js/modules/es6.array.fill.js","core-js/modules/es6.array.find":"node_modules/core-js/modules/es6.array.find.js","core-js/modules/es6.array.find-index":"node_modules/core-js/modules/es6.array.find-index.js","core-js/modules/es7.array.flat-map":"node_modules/core-js/modules/es7.array.flat-map.js","core-js/modules/es6.array.from":"node_modules/core-js/modules/es6.array.from.js","core-js/modules/es7.array.includes":"node_modules/core-js/modules/es7.array.includes.js","core-js/modules/es6.array.iterator":"node_modules/core-js/modules/es6.array.iterator.js","core-js/modules/es6.array.of":"node_modules/core-js/modules/es6.array.of.js","core-js/modules/es6.array.sort":"node_modules/core-js/modules/es6.array.sort.js","core-js/modules/es6.array.species":"node_modules/core-js/modules/es6.array.species.js","core-js/modules/es6.date.to-primitive":"node_modules/core-js/modules/es6.date.to-primitive.js","core-js/modules/es6.function.has-instance":"node_modules/core-js/modules/es6.function.has-instance.js","core-js/modules/es6.function.name":"node_modules/core-js/modules/es6.function.name.js","core-js/modules/es6.map":"node_modules/core-js/modules/es6.map.js","core-js/modules/es6.math.acosh":"node_modules/core-js/modules/es6.math.acosh.js","core-js/modules/es6.math.asinh":"node_modules/core-js/modules/es6.math.asinh.js","core-js/modules/es6.math.atanh":"node_modules/core-js/modules/es6.math.atanh.js","core-js/modules/es6.math.cbrt":"node_modules/core-js/modules/es6.math.cbrt.js","core-js/modules/es6.math.clz32":"node_modules/core-js/modules/es6.math.clz32.js","core-js/modules/es6.math.cosh":"node_modules/core-js/modules/es6.math.cosh.js","core-js/modules/es6.math.expm1":"node_modules/core-js/modules/es6.math.expm1.js","core-js/modules/es6.math.fround":"node_modules/core-js/modules/es6.math.fround.js","core-js/modules/es6.math.hypot":"node_modules/core-js/modules/es6.math.hypot.js","core-js/modules/es6.math.imul":"node_modules/core-js/modules/es6.math.imul.js","core-js/modules/es6.math.log1p":"node_modules/core-js/modules/es6.math.log1p.js","core-js/modules/es6.math.log10":"node_modules/core-js/modules/es6.math.log10.js","core-js/modules/es6.math.log2":"node_modules/core-js/modules/es6.math.log2.js","core-js/modules/es6.math.sign":"node_modules/core-js/modules/es6.math.sign.js","core-js/modules/es6.math.sinh":"node_modules/core-js/modules/es6.math.sinh.js","core-js/modules/es6.math.tanh":"node_modules/core-js/modules/es6.math.tanh.js","core-js/modules/es6.math.trunc":"node_modules/core-js/modules/es6.math.trunc.js","core-js/modules/es6.number.constructor":"node_modules/core-js/modules/es6.number.constructor.js","core-js/modules/es6.number.epsilon":"node_modules/core-js/modules/es6.number.epsilon.js","core-js/modules/es6.number.is-finite":"node_modules/core-js/modules/es6.number.is-finite.js","core-js/modules/es6.number.is-integer":"node_modules/core-js/modules/es6.number.is-integer.js","core-js/modules/es6.number.is-nan":"node_modules/core-js/modules/es6.number.is-nan.js","core-js/modules/es6.number.is-safe-integer":"node_modules/core-js/modules/es6.number.is-safe-integer.js","core-js/modules/es6.number.max-safe-integer":"node_modules/core-js/modules/es6.number.max-safe-integer.js","core-js/modules/es6.number.min-safe-integer":"node_modules/core-js/modules/es6.number.min-safe-integer.js","core-js/modules/es6.number.parse-float":"node_modules/core-js/modules/es6.number.parse-float.js","core-js/modules/es6.number.parse-int":"node_modules/core-js/modules/es6.number.parse-int.js","core-js/modules/es6.object.assign":"node_modules/core-js/modules/es6.object.assign.js","core-js/modules/es7.object.define-getter":"node_modules/core-js/modules/es7.object.define-getter.js","core-js/modules/es7.object.define-setter":"node_modules/core-js/modules/es7.object.define-setter.js","core-js/modules/es7.object.entries":"node_modules/core-js/modules/es7.object.entries.js","core-js/modules/es6.object.freeze":"node_modules/core-js/modules/es6.object.freeze.js","core-js/modules/es6.object.get-own-property-descriptor":"node_modules/core-js/modules/es6.object.get-own-property-descriptor.js","core-js/modules/es7.object.get-own-property-descriptors":"node_modules/core-js/modules/es7.object.get-own-property-descriptors.js","core-js/modules/es6.object.get-own-property-names":"node_modules/core-js/modules/es6.object.get-own-property-names.js","core-js/modules/es6.object.get-prototype-of":"node_modules/core-js/modules/es6.object.get-prototype-of.js","core-js/modules/es7.object.lookup-getter":"node_modules/core-js/modules/es7.object.lookup-getter.js","core-js/modules/es7.object.lookup-setter":"node_modules/core-js/modules/es7.object.lookup-setter.js","core-js/modules/es6.object.prevent-extensions":"node_modules/core-js/modules/es6.object.prevent-extensions.js","core-js/modules/es6.object.to-string":"node_modules/core-js/modules/es6.object.to-string.js","core-js/modules/es6.object.is":"node_modules/core-js/modules/es6.object.is.js","core-js/modules/es6.object.is-frozen":"node_modules/core-js/modules/es6.object.is-frozen.js","core-js/modules/es6.object.is-sealed":"node_modules/core-js/modules/es6.object.is-sealed.js","core-js/modules/es6.object.is-extensible":"node_modules/core-js/modules/es6.object.is-extensible.js","core-js/modules/es6.object.keys":"node_modules/core-js/modules/es6.object.keys.js","core-js/modules/es6.object.seal":"node_modules/core-js/modules/es6.object.seal.js","core-js/modules/es7.object.values":"node_modules/core-js/modules/es7.object.values.js","core-js/modules/es6.promise":"node_modules/core-js/modules/es6.promise.js","core-js/modules/es7.promise.finally":"node_modules/core-js/modules/es7.promise.finally.js","core-js/modules/es6.reflect.apply":"node_modules/core-js/modules/es6.reflect.apply.js","core-js/modules/es6.reflect.construct":"node_modules/core-js/modules/es6.reflect.construct.js","core-js/modules/es6.reflect.define-property":"node_modules/core-js/modules/es6.reflect.define-property.js","core-js/modules/es6.reflect.delete-property":"node_modules/core-js/modules/es6.reflect.delete-property.js","core-js/modules/es6.reflect.get":"node_modules/core-js/modules/es6.reflect.get.js","core-js/modules/es6.reflect.get-own-property-descriptor":"node_modules/core-js/modules/es6.reflect.get-own-property-descriptor.js","core-js/modules/es6.reflect.get-prototype-of":"node_modules/core-js/modules/es6.reflect.get-prototype-of.js","core-js/modules/es6.reflect.has":"node_modules/core-js/modules/es6.reflect.has.js","core-js/modules/es6.reflect.is-extensible":"node_modules/core-js/modules/es6.reflect.is-extensible.js","core-js/modules/es6.reflect.own-keys":"node_modules/core-js/modules/es6.reflect.own-keys.js","core-js/modules/es6.reflect.prevent-extensions":"node_modules/core-js/modules/es6.reflect.prevent-extensions.js","core-js/modules/es6.reflect.set":"node_modules/core-js/modules/es6.reflect.set.js","core-js/modules/es6.reflect.set-prototype-of":"node_modules/core-js/modules/es6.reflect.set-prototype-of.js","core-js/modules/es6.regexp.constructor":"node_modules/core-js/modules/es6.regexp.constructor.js","core-js/modules/es6.regexp.flags":"node_modules/core-js/modules/es6.regexp.flags.js","core-js/modules/es6.regexp.match":"node_modules/core-js/modules/es6.regexp.match.js","core-js/modules/es6.regexp.replace":"node_modules/core-js/modules/es6.regexp.replace.js","core-js/modules/es6.regexp.split":"node_modules/core-js/modules/es6.regexp.split.js","core-js/modules/es6.regexp.search":"node_modules/core-js/modules/es6.regexp.search.js","core-js/modules/es6.regexp.to-string":"node_modules/core-js/modules/es6.regexp.to-string.js","core-js/modules/es6.set":"node_modules/core-js/modules/es6.set.js","core-js/modules/es6.symbol":"node_modules/core-js/modules/es6.symbol.js","core-js/modules/es7.symbol.async-iterator":"node_modules/core-js/modules/es7.symbol.async-iterator.js","core-js/modules/es6.string.anchor":"node_modules/core-js/modules/es6.string.anchor.js","core-js/modules/es6.string.big":"node_modules/core-js/modules/es6.string.big.js","core-js/modules/es6.string.blink":"node_modules/core-js/modules/es6.string.blink.js","core-js/modules/es6.string.bold":"node_modules/core-js/modules/es6.string.bold.js","core-js/modules/es6.string.code-point-at":"node_modules/core-js/modules/es6.string.code-point-at.js","core-js/modules/es6.string.ends-with":"node_modules/core-js/modules/es6.string.ends-with.js","core-js/modules/es6.string.fixed":"node_modules/core-js/modules/es6.string.fixed.js","core-js/modules/es6.string.fontcolor":"node_modules/core-js/modules/es6.string.fontcolor.js","core-js/modules/es6.string.fontsize":"node_modules/core-js/modules/es6.string.fontsize.js","core-js/modules/es6.string.from-code-point":"node_modules/core-js/modules/es6.string.from-code-point.js","core-js/modules/es6.string.includes":"node_modules/core-js/modules/es6.string.includes.js","core-js/modules/es6.string.italics":"node_modules/core-js/modules/es6.string.italics.js","core-js/modules/es6.string.iterator":"node_modules/core-js/modules/es6.string.iterator.js","core-js/modules/es6.string.link":"node_modules/core-js/modules/es6.string.link.js","core-js/modules/es7.string.pad-start":"node_modules/core-js/modules/es7.string.pad-start.js","core-js/modules/es7.string.pad-end":"node_modules/core-js/modules/es7.string.pad-end.js","core-js/modules/es6.string.raw":"node_modules/core-js/modules/es6.string.raw.js","core-js/modules/es6.string.repeat":"node_modules/core-js/modules/es6.string.repeat.js","core-js/modules/es6.string.small":"node_modules/core-js/modules/es6.string.small.js","core-js/modules/es6.string.starts-with":"node_modules/core-js/modules/es6.string.starts-with.js","core-js/modules/es6.string.strike":"node_modules/core-js/modules/es6.string.strike.js","core-js/modules/es6.string.sub":"node_modules/core-js/modules/es6.string.sub.js","core-js/modules/es6.string.sup":"node_modules/core-js/modules/es6.string.sup.js","core-js/modules/es7.string.trim-left":"node_modules/core-js/modules/es7.string.trim-left.js","core-js/modules/es7.string.trim-right":"node_modules/core-js/modules/es7.string.trim-right.js","core-js/modules/es6.typed.array-buffer":"node_modules/core-js/modules/es6.typed.array-buffer.js","core-js/modules/es6.typed.int8-array":"node_modules/core-js/modules/es6.typed.int8-array.js","core-js/modules/es6.typed.uint8-array":"node_modules/core-js/modules/es6.typed.uint8-array.js","core-js/modules/es6.typed.uint8-clamped-array":"node_modules/core-js/modules/es6.typed.uint8-clamped-array.js","core-js/modules/es6.typed.int16-array":"node_modules/core-js/modules/es6.typed.int16-array.js","core-js/modules/es6.typed.uint16-array":"node_modules/core-js/modules/es6.typed.uint16-array.js","core-js/modules/es6.typed.int32-array":"node_modules/core-js/modules/es6.typed.int32-array.js","core-js/modules/es6.typed.uint32-array":"node_modules/core-js/modules/es6.typed.uint32-array.js","core-js/modules/es6.typed.float32-array":"node_modules/core-js/modules/es6.typed.float32-array.js","core-js/modules/es6.typed.float64-array":"node_modules/core-js/modules/es6.typed.float64-array.js","core-js/modules/es6.weak-map":"node_modules/core-js/modules/es6.weak-map.js","core-js/modules/es6.weak-set":"node_modules/core-js/modules/es6.weak-set.js","core-js/modules/web.timers":"node_modules/core-js/modules/web.timers.js","core-js/modules/web.immediate":"node_modules/core-js/modules/web.immediate.js","core-js/modules/web.dom.iterable":"node_modules/core-js/modules/web.dom.iterable.js","regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","gsap":"node_modules/gsap/index.js","./ending.js":"ending.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -12907,7 +13110,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50126" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61564" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
