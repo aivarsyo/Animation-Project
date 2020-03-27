@@ -259,6 +259,7 @@ async function importsSecondScene() {
 
     pedalsClicked();
     moveClouds();
+    flagsClicked();
 }
 
 function pedalsClicked() {
@@ -346,3 +347,66 @@ function getMoveSpeed() {
     }
     return moveAmount;
 }
+
+function flagsClicked() {
+
+    document.querySelectorAll("#checkpoints > image").forEach(element => {
+        element.addEventListener("click", oneFlagClicked)
+    })
+}
+
+async function oneFlagClicked() {
+    let response = await fetch("engine2.svg");
+    let mySvgData = await response.text();
+    document.querySelector("#modalEngine").innerHTML = mySvgData;
+
+    const bigEngine = document.querySelector("#modalEngine > svg");
+    const containerOfEngine = document.querySelector("#modalEngine");
+
+    containerOfEngine.classList.remove("hidden");
+
+    gsap.set(bigEngine, {
+        transformOrigin: "center",
+        scale: 0,
+        y: -200
+    })
+
+    gsap.to(bigEngine, {
+        scale: 0.8
+    })
+
+    const span = document.createElement("span");
+    span.classList.add("close");
+    document.querySelector("#modalEngine").appendChild(span);
+
+    span.innerHTML = "&times;";
+
+    span.addEventListener("click", function () {
+        containerOfEngine.classList.add("hidden");
+    })
+
+
+
+
+}
+
+/* var modal = document.getElementById("myModal");
+
+
+var img = document.getElementById("myImg");
+var modalImg = document.getElementById("img01");
+var captionText = document.getElementById("caption");
+img.onclick = function () {
+    modal.style.display = "block";
+    modalImg.src = this.src;
+    captionText.innerHTML = this.alt;
+}
+
+
+var span = document.getElementsByClassName("close")[0];
+
+
+span.onclick = function () {
+    modal.style.display = "none";
+} */
+
