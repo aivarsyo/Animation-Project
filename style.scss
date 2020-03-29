@@ -10,7 +10,7 @@ body{
 }
 
 .body-bck{
-    background: url(background2.svg);
+    background: url(secondSceneBackground/background3.svg);
     background-size: cover;
     background-repeat: repeat-x;
     background-position: -60%;
@@ -67,12 +67,12 @@ body{
 
   #car, #pedalsSection{
       position: absolute;
-      width: 40%;
+      width: 35vw;
       height: auto;
   }
 
   #car{
-      top: 45vh;
+      top: 55vh;
       left: 5vw;
   }
 
@@ -86,7 +86,7 @@ body{
       cursor: pointer;
   }
 
-  #checkpoints > image{
+  #checkpoints > g{
     cursor: pointer;
   }
 

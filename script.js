@@ -3,16 +3,13 @@ import { gsap } from "gsap";
 import { Power1 } from "gsap";
 import { Power2 } from "gsap";
 import { Linear } from "gsap";
-import { Bounce } from "gsap";
 import { showAlert } from "./ending.js";
-
-let myAnimation;
 
 window.addEventListener("DOMContentLoaded", start);
 
 async function start() {
 
-    let response = await fetch("carParts4.svg");
+    let response = await fetch("CarParts4.svg");
 
     let mySvgData = await response.text();
 
@@ -71,6 +68,10 @@ async function importAssemblyLine() {
     FordLogo.addEventListener("click", function () {
         fordLogoClicked();
     });
+
+    FordLogo.addEventListener("touchstart", function () {
+        fordLogoClicked();
+    });
 }
 
 async function fordLogoClicked() {
@@ -85,6 +86,8 @@ async function fordLogoClicked() {
 }
 
 function continueFordClicked() {
+
+    //when ford clicked, assembly line shows up and parts drop on it, as well kills the animation for random movement
 
     const assemblyLine = document.createElementNS('http://www.w3.org/2000/svg', 'use');
 
@@ -107,6 +110,8 @@ function continueFordClicked() {
     });
 
     document.querySelector("#FordLogo").style.display = "none";
+
+    // as well shows general info for this car as imported svg
 
     importsMainInfo();
 
@@ -139,9 +144,16 @@ function clickRedButton() {
     const redButton = document.querySelector("#redButton");
 
     redButton.addEventListener("click", redButtonClicked);
+    redButton.addEventListener("touchstart", redButtonClicked);
 }
 
 function redButtonClicked() {
+
+    // when button clicked, parts move out of the screen and current objects disappear - next scene shows up
+
+    const redButton = document.querySelector("#redButton");
+
+    redButton.style.display = "none";
 
     const engineSound = document.querySelector("#engineSound");
 
@@ -184,6 +196,7 @@ function redButtonClicked() {
 }
 
 /* ------------------------------------------- */
+//defines the values for clicking on pedals and moving the car
 
 let root = document.documentElement;
 let currentPos = 0;
@@ -196,6 +209,8 @@ const topSpeed = 10;
 let mousePressed = false;
 
 function moveClouds() {
+
+    // makes clouds move randomly in calculated distance
 
     var _container = document.querySelector("#backgroundSecondScene");
     var _parts = document.querySelectorAll('#clouds > *');
@@ -235,7 +250,18 @@ function moveClouds() {
     }
 };
 
+function skewFlags() {
 
+    // skews flags forth and back
+
+    gsap.to("#checkpoints > g > path:nth-child(1)", 2, {
+        skewY: 10,
+        yoyo: true,
+        ease: Linear.easeNone,
+        repeat: -1
+    })
+
+}
 
 async function importsSecondScene() {
 
@@ -247,7 +273,7 @@ async function importsSecondScene() {
         element.classList.remove("hidden");
     })
 
-    let response = await fetch("background2.svg");
+    let response = await fetch("background3.svg");
     let mySvgData = await response.text();
     document.querySelector("#background").innerHTML = mySvgData;
 
@@ -262,17 +288,20 @@ async function importsSecondScene() {
     pedalsClicked();
     moveClouds();
     importFilesForFlags();
+    skewFlags();
 }
 
 function pedalsClicked() {
 
+    // adds holding function on pedals, so that car can move forwards and backwards
+
     const wheels = document.querySelectorAll("#firstWheel, #secondWheel");
+    const carDrives = document.querySelector("#carDrives");
 
     document.querySelector("#pedalsGroup > image:nth-child(1)").addEventListener("mousedown", () => {
         mousePressed = true;
         moveCar("left");
 
-        const carDrives = document.querySelector("#carDrives");
         carDrives.play();
 
         gsap.to(wheels, 3, {
@@ -289,7 +318,6 @@ function pedalsClicked() {
         mousePressed = true;
         moveCar("right");
 
-        const carDrives = document.querySelector("#carDrives");
         carDrives.play();
 
         gsap.to(wheels, 3, {
@@ -305,7 +333,48 @@ function pedalsClicked() {
     document.addEventListener("mouseup", () => {
         mousePressed = false;
 
-        const carDrives = document.querySelector("#carDrives");
+        carDrives.pause();
+
+        gsap.killTweensOf(wheels);
+
+        event.preventDefault();
+    });
+
+    document.querySelector("#pedalsGroup > image:nth-child(1)").addEventListener("touchstart", () => {
+        mousePressed = true;
+        moveCar("left");
+
+        carDrives.play();
+
+        gsap.to(wheels, 3, {
+            rotation: -360,
+            repeat: -1,
+            ease: Linear.easeNone,
+            transformOrigin: "center"
+        })
+
+        event.preventDefault();
+    });
+
+    document.querySelector("#pedalsGroup > image:nth-child(2)").addEventListener("touchstart", () => {
+        mousePressed = true;
+        moveCar("right");
+
+        carDrives.play();
+
+        gsap.to(wheels, 3, {
+            rotation: 360,
+            repeat: -1,
+            ease: Linear.easeNone,
+            transformOrigin: "center"
+        })
+
+        event.preventDefault();
+    });
+
+    document.addEventListener("touchend", () => {
+        mousePressed = false;
+
         carDrives.pause();
 
         gsap.killTweensOf(wheels);
@@ -347,9 +416,13 @@ function moveCar(direction) {
 }
 
 function checkForEnding() {
+
+    // checks the current position of car and when it's at the end, fuel alerts shows up
+
     if (currentPos <= endPos) {
         showAlert();
     } else if (currentPos > endPos) {
+        // or if car goes back, the alert disappears for UX
         document.querySelector("#fuelAlert").classList.add("hidden");
     }
 }
@@ -374,9 +447,13 @@ function getMoveSpeed() {
 }
 
 function makeSmoke() {
+
+    // svg of smoke shows up when car is moved and pedal pressed, duplicates itself
+    // and when released, disappears
+
     if (!mousePressed) return;
     let s = document.createElement("div");
-    loadSVG("/smoke.svg", s);
+    loadSVG("smoke.svg", s);
     s.classList.add("smokeAnim");
     s.addEventListener("animationend", () => {
         s.remove();
@@ -415,17 +492,23 @@ async function importFilesForFlags() {
 
 function oneFlagClicked(data) {
 
+    // if a specific flag is clicked, the engine svg shows up and inserts
+    // the needed json data
+
     console.log(data);
 
     let flag = document.getElementById(`${data.id}`);
 
     if (data.id == flag.id) {
         flag.addEventListener("click", clickFlag)
+        flag.addEventListener("touchstart", clickFlag)
     } else {
         console.log("else")
     }
 
     function clickFlag() {
+
+        flag.childNodes[1].style.fill = "#13D821";
 
         const bigEngine = document.querySelector("#modalEngine > svg");
         const containerOfEngine = document.querySelector("#modalEngine");
@@ -450,6 +533,9 @@ function oneFlagClicked(data) {
         span.innerHTML = "&times;";
 
         span.addEventListener("click", function () {
+            containerOfEngine.classList.add("hidden");
+        })
+        span.addEventListener("touchstart", function () {
             containerOfEngine.classList.add("hidden");
         })
 
