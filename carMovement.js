@@ -17,6 +17,11 @@ function start() {
   loadSVG("/car.svg", document.querySelector("#car"));
   loadSVG("/moveBackButton.svg", document.querySelector("#button1"));
   loadSVG("/moveForwardButton.svg", document.querySelector("#button2"));
+  addMouseEvents();
+  addTouchEvents();
+}
+
+function addMouseEvents() {
   document.querySelector("#button1").addEventListener("mousedown", () => {
     mousePressed = true;
     moveCar("left");
@@ -28,6 +33,9 @@ function start() {
   document.addEventListener("mouseup", () => {
     mousePressed = false;
   });
+}
+
+function addTouchEvents() {
   document.querySelector("#button1").addEventListener("touchstart", () => {
     mousePressed = true;
     moveCar("left");
