@@ -4,7 +4,7 @@ const fuel = document.querySelector("#fuelAlert");
 const adviceBox = document.querySelector("#adviceBox");
 
 async function start() {
-  let response = await fetch("/fuelalert.svg");
+  let response = await fetch("fuelalert.svg");
   let mySvg = await response.text();
 
   fuel.innerHTML = mySvg;
@@ -15,6 +15,7 @@ export function showAlert() {
   fuel.classList.remove("hidden");
   fuel.classList.add("fuelAnim");
   fuel.addEventListener("click", redirectToBeginning);
+  fuel.addEventListener("touchstart", redirectToBeginning);
 }
 
 function redirectToBeginning() {

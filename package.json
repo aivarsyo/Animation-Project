@@ -6,7 +6,7 @@
   "scripts": {
     "build-amd": "npm run bundle-amd && npm run minify-amd",
     "start": "parcel index.html --open",
-    "build": "parcel build *.html"
+    "build": "parcel build *.html --public-url ./"
   },
   "repository": {
     "type": "git",

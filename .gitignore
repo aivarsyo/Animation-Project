@@ -8,3 +8,6 @@ sketches/
 secondSceneBackground/
 engine/
 video/
+node_modules/
+dist/
+.cache/
