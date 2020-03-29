@@ -261,7 +261,7 @@ async function importsSecondScene() {
 
     pedalsClicked();
     moveClouds();
-    flagsClicked();
+    importFilesForFlags();
 }
 
 function pedalsClicked() {
@@ -349,6 +349,8 @@ function moveCar(direction) {
 function checkForEnding() {
     if (currentPos <= endPos) {
         showAlert();
+    } else if (currentPos > endPos) {
+        document.querySelector("#fuelAlert").classList.add("hidden");
     }
 }
 
@@ -393,45 +395,76 @@ async function loadSVG(url, parent) {
 
 /* --------------------------------- */
 
-function flagsClicked() {
+async function importFilesForFlags() {
 
-    document.querySelectorAll("#checkpoints > image").forEach(element => {
-        element.addEventListener("click", oneFlagClicked)
-    })
-}
-
-async function oneFlagClicked() {
-    let response = await fetch("engine2.svg");
+    let response = await fetch("engine4.svg");
     let mySvgData = await response.text();
     document.querySelector("#modalEngine").innerHTML = mySvgData;
 
-    const bigEngine = document.querySelector("#modalEngine > svg");
-    const containerOfEngine = document.querySelector("#modalEngine");
-
-    containerOfEngine.classList.remove("hidden");
-
-    gsap.set(bigEngine, {
-        transformOrigin: "center",
-        scale: 0,
-        y: -200
-    })
-
-    gsap.to(bigEngine, {
-        scale: 0.8
-    })
-
-    const span = document.createElement("span");
-    span.classList.add("close");
-    document.querySelector("#modalEngine").appendChild(span);
-
-    span.innerHTML = "&times;";
-
-    span.addEventListener("click", function () {
-        containerOfEngine.classList.add("hidden");
-    })
+    fetch('carInfo.json')
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            //console.log(data)
+            data.forEach(oneFlagClicked);
+        });
 
 
+}
 
+function oneFlagClicked(data) {
+
+    console.log(data);
+
+    let flag = document.getElementById(`${data.id}`);
+
+    if (data.id == flag.id) {
+        flag.addEventListener("click", clickFlag)
+    } else {
+        console.log("else")
+    }
+
+    function clickFlag() {
+
+        const bigEngine = document.querySelector("#modalEngine > svg");
+        const containerOfEngine = document.querySelector("#modalEngine");
+        let textOfModal = document.querySelector("#engineModal > g > text:nth-child(4)");
+        let titleOfModal = document.querySelector("#engineModal > g > text:nth-child(6)");
+
+        containerOfEngine.classList.remove("hidden");
+
+        gsap.set(bigEngine, {
+            transformOrigin: "center",
+            scale: 0
+        })
+
+        gsap.to(bigEngine, {
+            scale: 1
+        })
+
+        const span = document.createElement("span");
+        span.classList.add("close");
+        document.querySelector("#modalEngine").appendChild(span);
+
+        span.innerHTML = "&times;";
+
+        span.addEventListener("click", function () {
+            containerOfEngine.classList.add("hidden");
+        })
+
+        titleOfModal.textContent = data.title;
+        textOfModal.textContent = data.description;
+
+        document.querySelectorAll("#titleOfModal, #descOfModal").forEach(element => {
+            d3plus.textwrap()
+                .container(d3.select(element))
+                .resize(true)
+                .draw();
+        })
+
+
+    }
 
 }
 
