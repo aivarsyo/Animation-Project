@@ -10715,13 +10715,13 @@
 </g>
 <g id="checkpoints">
 	
-		<image style="overflow:visible;" width="154" height="210" xlink:href="Asset 3.png"  transform="matrix(1 0 0 1 487.7211 409.2476)">
+		<image id="flag1" style="overflow:visible;" width="154" height="210" xlink:href="Asset 3.png"  transform="matrix(1 0 0 1 487.7211 409.2476)">
 	</image>
 	
-		<image style="overflow:visible;" width="154" height="210" xlink:href="Asset 3.png"  transform="matrix(1 0 0 1 885.6358 410.6323)">
+		<image id="flag2" style="overflow:visible;" width="154" height="210" xlink:href="Asset 3.png"  transform="matrix(1 0 0 1 885.6358 410.6323)">
 	</image>
 	
-		<image style="overflow:visible;" width="154" height="210" xlink:href="Asset 3.png"  transform="matrix(1 0 0 1 1260.4359 413.5731)">
+		<image id="flag3" style="overflow:visible;" width="154" height="210" xlink:href="Asset 3.png"  transform="matrix(1 0 0 1 1260.4359 413.5731)">
 	</image>
 </g>
 </svg>
