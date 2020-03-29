@@ -28,6 +28,17 @@ function start() {
   document.addEventListener("mouseup", () => {
     mousePressed = false;
   });
+  document.querySelector("#button1").addEventListener("touchstart", () => {
+    mousePressed = true;
+    moveCar("left");
+  });
+  document.querySelector("#button2").addEventListener("touchstart", () => {
+    mousePressed = true;
+    moveCar("right");
+  });
+  document.addEventListener("touchend", () => {
+    mousePressed = false;
+  });
 }
 
 async function loadSVG(url, parent) {
