@@ -28,7 +28,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.8.7",
     "@babel/runtime": "^7.8.7",
-    "gsap": "^3.2.4",
+    "gsap": "^3.6.0",
     "parcel-plugin-static-files-copy": "^2.3.1",
     "svg.js": "^2.7.1"
   }
